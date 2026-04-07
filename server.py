@@ -18,11 +18,13 @@ def sent_analyzer():
         f"The dominant emotion is {response['dominant_emotion']}."
     )
 
-    return formatted_response
+    if response['dominant_emotion'] is not None:
+        return formatted_response
+    return "Invalid text! Please try again."
 
 @app.route("/")
 
 def render_index_page():
     return render_template('index.html')
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=7000)

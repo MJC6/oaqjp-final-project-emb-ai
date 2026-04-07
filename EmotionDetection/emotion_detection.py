@@ -7,11 +7,37 @@ def emotion_detector(text_to_analyze):  # Define a function named emotion_detect
     response = requests.post(url, json = myobj, headers=header)  # Send a POST request to the API with the text and headers
     # Parsing the JSON response from the API
     formatted_response = json.loads(response.text)
-    emotion_scores = formatted_response["emotionPredictions"][0]["emotion"]
-    dominant_emotion = max(emotion_scores, key=emotion_scores.get)
-    return {'anger': emotion_scores['anger'],
-     'disgust': emotion_scores['disgust'],
-     'fear': emotion_scores['fear'],
-     'joy': emotion_scores['joy'],
-     'sadness': emotion_scores['sadness'],
-     'dominant_emotion': dominant_emotion}
+    if response.status_code == 200:
+        return formatted_response
+    elif response.status_code == 400:
+        formatted_response = {
+                            'anger': None,
+                            'disgust': None, 
+                            'fear': None, 
+                            'joy': None, 
+                            'sadness': None, 
+                            'dominant_emotion': None}
+        return formatted_response
+
+def emotion_predictor(detected_text):
+    if all(value is None for value in detected_text.values()):
+        return detected_text
+    if detected_text['emotionPredictions'] is not None:
+        emotions = detected_text['emotionPredictions'][0]['emotion']
+        anger = emotions['anger']
+        disgust = emotions['disgust']
+        fear = emotions['fear']
+        joy = emotions['joy']
+        sadness = emotions['sadness']
+        max_emotion = max(emotions, key=emotions.get)
+        #max_emotion_score = emotions[max_emotion]
+        formatted_emotions = {
+                                'anger': anger,
+                                'disgust': disgust,
+                                'fear': fear,
+                                'joy': joy,
+                                'sadness': sadness,
+                                'dominant_emotion': max_emotion
+                                }
+        return formatted_emotions
+
